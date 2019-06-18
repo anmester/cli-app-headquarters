@@ -1,9 +1,9 @@
 
 def welcome
-    puts "Welcome to HQ! Please input your username."
+    puts "Welcome to HQ! Please create a username."
     name = gets.chomp
     User.create(username: name)
-    puts "Welcome back, #{username}!"
+    puts "Welcome, #{username}!"
 end
 
 def get_location
@@ -13,7 +13,10 @@ def get_location
     company_names = city_match.map do |company|
         company.name
     end
-    puts "Here are the companies that have offices in the city you requested:"
+    puts "Here are the companies that have offices in #{city}:"
     company_names
+end
+
+def save_companies
 end
 
