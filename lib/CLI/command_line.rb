@@ -13,9 +13,13 @@ class CLI
         company_names = city_match.map do |company|
             company.name
         end
-        puts "Here are the companies that have offices in #{city}:"
         company_names
+        binding.pry
     end
+
+    # def say_names
+    #     puts "These are the companies that have offices in your city."
+    # end
 
     def save_companies
         puts "Would you like to save any of these companies? Please enter the name of the first company you'd like to save."
@@ -25,5 +29,9 @@ class CLI
             company.id
         end
         Favorite.create(user: @user, company: company_matches)
+        puts "Thanks! #{company_name} has been saved to your favorites."
+    end
+
+    def see_favorites
     end
 end 

@@ -8,7 +8,9 @@ require_relative '../config/environment.rb'
 
 binding.pry
 
-# welcome
-# get_location
-# save_companies
+# cli = CLI.new
+
+# cli.welcome
+# cli.get_location
+# cli.save_companies
 
