@@ -18,7 +18,8 @@ class CLI
         if User.exists?(username: name)
             @user = User.find_by(username: name)
             puts "Welcome, #{name}!"
-        else 
+            main_menu
+        else
             puts "We're sorry, we can't find that username."
             failed_login
         end
@@ -27,8 +28,9 @@ class CLI
     def failed_login
         puts "Please try entering it again."
         answer = gets.chomp
-        if answer = User.exists?(username: answer) 
+        if answer = User.exists?(username: answer)
             puts "Login success!"
+            main_menu
         elsif
             try_again
         end
@@ -52,11 +54,12 @@ class CLI
         new_name = gets.chomp
         @user = User.create(username: new_name)
         puts "Welcome, #{new_name}!"
+        main_menu
     end
-        
-    def logged_in_menu
+
+    def main_menu
         puts "Please type 1 or 2 to continue."
-        puts "1. Search for companies" 
+        puts "1. Search for companies"
         puts "2. See your favorites"
         answer = gets.chomp
         if answer == "1"
@@ -65,10 +68,10 @@ class CLI
             see_favorites
         else
             puts "We're sorry, that's not an option."
-            logged_in_menu
+            main_menu
         end
     end
-    
+
     def get_location
         puts "Please enter the city you'd like to work in."
         city = gets.chomp
@@ -79,23 +82,37 @@ class CLI
         company_names.each do |company|
             puts company
         end
-        puts "These are the companies that have offices in #{city}!"
+        puts "These are the companies that have offices in #{city}! Would you like to save any of these companies?"
+        save_company
     end
 
-    def save_companies
-        puts "Would you like to save any of these companies? Please enter the name of the first company you'd like to save."
-        company_name = gets.chomp
-        company_match = Company.where name: company_name
-        company_matches = company_match.find do |company|
+    def save_company
+      puts "Please enter the name of the company you'd like to save. Otherwise, type exit to return to the menu."
+      response = gets.chomp
+        if response == "exit"
+          main_menu
+        else
+          company_match = Company.where name: response
+          company_matches = company_match.find do |company|
             company.id
+          end
+          @user.favorites << Favorite.create(user: @user, company: company_matches)
+          puts "Thanks! #{response} has been saved to your favorites."
+          save_company
         end
-        Favorite.create(user: @user, company: company_matches)
-        puts "Thanks! #{company_name} has been saved to your favorites."
     end
+
 
     def see_favorites
-        User.all.map do |user|
-            user.username
-        end
+      fav_companies = @user.favorites.map do |favorite|
+          favorite.company_id
+      end
+      company_matches = Company.where id: fav_companies
+      company_match_names = company_matches.map do |company|
+          puts company.name
+      end
+
     end
-end 
+
+
+end # end of class method
