@@ -100,28 +100,36 @@ class CLI
       puts "Please enter the name of the company you'd like to save. Otherwise, type exit to return to the menu."
       response = gets.chomp
         if response == "exit"
-          main_menu
+            main_menu
+        elsif Company.exists?(name: response)
+            company_match = Company.where name: response
+            company_matches = company_match.find do |company|
+                company.id
+            end
+            @user.favorites << Favorite.create(user: @user, company: company_matches)
+            puts "Thanks! #{response} has been saved to your favorites."
+            save_company
         else
-          company_match = Company.where name: response
-          company_matches = company_match.find do |company|
-            company.id
-          end
-          @user.favorites << Favorite.create(user: @user, company: company_matches)
-          puts "Thanks! #{response} has been saved to your favorites."
-          save_company
+            puts "We're sorry, there are no companies that match the name #{response}. Please try again."
+            save_company
         end
     end
 
     def see_favorites
-      fav_companies = @user.favorites.map do |favorite|
-        favorite.company_id
-      end
-      company_matches = Company.where id: fav_companies
-      puts "These are your matches:"
-      company_matches.map do |company|
-        puts company.name
-      end
-      favorite_options
+        fav_companies = @user.favorites.map do |favorite|
+            favorite.company_id
+        end
+        company_matches = Company.where id: fav_companies
+        if company_matches.count == 0
+            puts "You have no favorites yet! Add some by searching for some companies."
+            main_menu
+        else
+            puts "These are your matches:"
+            company_matches.map do |company|
+                puts company.name
+            end
+            favorite_options
+        end
     end
 
     def favorite_options
