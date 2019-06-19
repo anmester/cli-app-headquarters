@@ -6,9 +6,9 @@ require_relative '../config/environment.rb'
 #     Company.create(name: row[1], location: row[12])
 # end
 
-binding.pry
 
-# cli = CLI.new
+cli = CLI.new
+binding.pry
 
 # cli.welcome
 # cli.get_location
