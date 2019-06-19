@@ -1,16 +1,10 @@
 class CLI
     def welcome
-        puts "Welcome to HQ! Please type 1 to log in or 2 to create a username."
-        answer = gets.chomp
-        if answer == "2"
-            create_username
-        elsif answer == "1"
-            login
-        else
-            puts "We're sorry, we didn't understand that command."
-            welcome
+        prompt = TTY::Prompt.new
+        prompt.select("Welcome to HQ! Please log in or create a username.") do |menu|
+            menu.choice 'Login', -> {login}
+            menu.choice 'Create a username', -> {create_username}
         end
-        system("clear")
     end
 
     def login
@@ -51,7 +45,7 @@ class CLI
     end
 
     def create_username
-        puts "Please create a username."
+        puts "Please type in the username you'd like to create."
         new_name = gets.chomp
         @user = User.create(username: new_name)
         puts "Welcome, #{new_name}!"
@@ -59,21 +53,11 @@ class CLI
     end
 
     def main_menu
-        puts "Please type 1, 2 or 3 to continue."
-        puts ""
-        puts "1. Search for companies"
-        puts "2. See your favorites"
-        puts "3. Exit HQ"
-        answer = gets.chomp
-        if answer == "1"
-            get_location
-        elsif answer == "2"
-            see_favorites
-        elsif answer == "3"
-            exit
-        else
-            puts "We're sorry, that's not an option."
-            main_menu
+        prompt = TTY::Prompt.new
+        prompt.select("Please select a menu option.") do |menu|
+            menu.choice 'Search for companies', -> {get_location}
+            menu.choice 'See your favorites', -> {see_favorites}
+            menu.choice 'Exit HQ', -> {exit}
         end
     end
 
