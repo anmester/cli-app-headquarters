@@ -32,15 +32,10 @@ class CLI
     end
 
     def try_again
-        puts "Type 1 to try again or 2 to create a username."
-        new_answer = gets.chomp
-        if new_answer == "1"
-            failed_login
-        elsif new_answer == "2"
-            create_username
-        else
-            puts "We're sorry, we didn't understand that. Please type 1 to try again or 2 to create a username."
-            try_again
+        prompt = TTY::Prompt.new
+        prompt.select("Would you like to try again or create a new username?") do |menu|
+            menu.choice 'Try again', -> {failed_login}
+            menu.choice 'Create username', -> {create_username}
         end
     end
 
@@ -117,15 +112,10 @@ class CLI
     end
 
     def favorite_options
-        puts "What would you like to do next? Press 1 to search for more companies or 2 to return to the main menu."
-        answer = gets.chomp
-        if answer == "1"
-            get_location
-        elsif answer == "2"
-            main_menu
-        else
-            puts "We're sorry, that's not an option. Trying again..."
-            favorite_options
+        prompt = TTY::Prompt.new
+        prompt.select("What would you like to do next?") do |menu|
+            menu.choice 'Search for more companies', -> {get_location}
+            menu.choice 'Return to main menu', -> {main_menu}
         end
     end
 
