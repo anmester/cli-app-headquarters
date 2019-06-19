@@ -61,11 +61,14 @@ class CLI
         puts "Please type 1 or 2 to continue."
         puts "1. Search for companies"
         puts "2. See your favorites"
+        puts "3. Exit HQ"
         answer = gets.chomp
         if answer == "1"
             get_location
         elsif answer == "2"
             see_favorites
+        elsif answer == "3"
+            exit
         else
             puts "We're sorry, that's not an option."
             main_menu
@@ -102,17 +105,15 @@ class CLI
         end
     end
 
-
     def see_favorites
       fav_companies = @user.favorites.map do |favorite|
-          favorite.company_id
+        favorite.company_id
       end
       company_matches = Company.where id: fav_companies
-      company_match_names = company_matches.map do |company|
-          puts company.name
+      puts "These are your matches:"
+      company_matches.map do |company|
+        puts company.name
       end
-
     end
-
 
 end # end of class method
