@@ -16,6 +16,7 @@ class CLI
         puts "Welcome back! Please enter your username."
         name = gets.chomp
         if User.exists?(username: name)
+            @user = User.find_by(username: name)
             puts "Welcome, #{name}!"
         else 
             puts "We're sorry, we can't find that username."
@@ -41,7 +42,7 @@ class CLI
         elsif new_answer == "2"
             create_username
         else
-            "We're sorry, we didn't understand that. Please type 1 to try again or 2 to create a username."
+            puts "We're sorry, we didn't understand that. Please type 1 to try again or 2 to create a username."
             try_again
         end
     end
@@ -49,11 +50,25 @@ class CLI
     def create_username
         puts "Please create a username."
         new_name = gets.chomp
-        User.create(username: new_name)
+        @user = User.create(username: new_name)
         puts "Welcome, #{new_name}!"
     end
         
-
+    def logged_in_menu
+        puts "Please type 1 or 2 to continue."
+        puts "1. Search for companies" 
+        puts "2. See your favorites"
+        answer = gets.chomp
+        if answer == "1"
+            get_location
+        elsif answer == "2"
+            see_favorites
+        else
+            puts "We're sorry, that's not an option."
+            logged_in_menu
+        end
+    end
+    
     def get_location
         puts "Please enter the city you'd like to work in."
         city = gets.chomp
@@ -79,5 +94,8 @@ class CLI
     end
 
     def see_favorites
+        User.all.map do |user|
+            user.username
+        end
     end
 end 
