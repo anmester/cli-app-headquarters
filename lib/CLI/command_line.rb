@@ -10,6 +10,7 @@ class CLI
             puts "We're sorry, we didn't understand that command."
             welcome
         end
+        system("clear")
     end
 
     def login
@@ -58,7 +59,8 @@ class CLI
     end
 
     def main_menu
-        puts "Please type 1 or 2 to continue."
+        puts "Please type 1, 2 or 3 to continue."
+        puts ""
         puts "1. Search for companies"
         puts "2. See your favorites"
         puts "3. Exit HQ"
@@ -78,15 +80,20 @@ class CLI
     def get_location
         puts "Please enter the city you'd like to work in."
         city = gets.chomp
-        city_match = Company.where location: city
-        company_names = city_match.map do |company|
-            company.name
+        if Company.exists?(location: city)
+            city_match = Company.where location: city
+            company_names = city_match.map do |company|
+                company.name
+            end
+            company_names.each do |company|
+                puts company
+            end
+            puts "These are the companies that have offices in #{city}! Would you like to save any of these companies?"
+            save_company
+        else
+            puts "We're sorry, there are no jobs in #{city}. Please try again."
+            get_location
         end
-        company_names.each do |company|
-            puts company
-        end
-        puts "These are the companies that have offices in #{city}! Would you like to save any of these companies?"
-        save_company
     end
 
     def save_company
@@ -114,6 +121,20 @@ class CLI
       company_matches.map do |company|
         puts company.name
       end
+      favorite_options
+    end
+
+    def favorite_options
+        puts "What would you like to do next? Press 1 to search for more companies or 2 to return to the main menu."
+        answer = gets.chomp
+        if answer == "1"
+            get_location
+        elsif answer == "2"
+            main_menu
+        else
+            puts "We're sorry, that's not an option. Trying again..."
+            favorite_options
+        end
     end
 
 end # end of class method
