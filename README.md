@@ -1,6 +1,6 @@
 # HQ - a Command Line CRUD App
 
-Welcome to HQ! With this CLI app, you are able to log in, search the Crunchbase database to find companies by location or keyword, and save chosen companies to a favorites list. You're also able to delete any favorites you may not want to save anymore, access favorites to review, and learn more about any company by selecting that option.
+Welcome to Headquarters! With this CLI app, you are able to log in, search the Crunchbase database to find companies by location or keyword, and save chosen companies to a favorites list. You're also able to delete any favorites you may not want to save anymore, access favorites to review, and learn more about any company by selecting that option.
 
 ## Installation
 

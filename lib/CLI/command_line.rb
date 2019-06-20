@@ -7,7 +7,7 @@ class CLI
     pastel = Pastel.new
     puts ' '
     puts '――――――――――――――――――――――---―――――――――――――――――――---------'
-    puts pastel.bold('Welcome to HQ! Please log in or create a username.')
+    puts pastel.bold('Welcome to Headquarters! Please log in or create a username.')
     prompt = TTY::Prompt.new
     prompt.select('') do |menu|
       menu.choice 'Login', -> { login }
@@ -90,7 +90,7 @@ class CLI
     prompt.select('Please select a menu option.') do |menu|
       menu.choice 'Search for companies', -> { search_menu }
       menu.choice 'See your favorites', -> { see_favorites }
-      menu.choice 'Exit HQ', -> { exit }
+      menu.choice 'Exit Headquarters', -> { exit }
     end
   end
 
