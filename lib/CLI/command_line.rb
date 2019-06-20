@@ -86,15 +86,28 @@ class CLI
     puts '―――――――――――――――――――――――――――-'
     prompt = TTY::Prompt.new
     prompt.select('Please select a menu option.') do |menu|
-      menu.choice 'Search for companies', -> { get_location }
+      menu.choice 'Search for companies', -> { search_menu }
       menu.choice 'See your favorites', -> { see_favorites }
       menu.choice 'Exit HQ', -> { exit }
     end
   end
 
+  def search_menu
+    system 'clear'
+    prompt = TTY::Prompt.new
+    pastel = Pastel.new
+    puts pastel.bold('          Search Menu')
+    puts '―――――――――――――――――――――――――――-'
+    prompt = TTY::Prompt.new
+    prompt.select('Please select a menu option.') do |menu|
+      menu.choice 'Search for companies by location', -> { get_location }
+      menu.choice 'Search for companies by keyword', -> { find_companies_by_description }
+      menu.choice 'Go back to main menu', -> { main_menu }
+    end
+  end
+
   def get_location
     puts ''
-    system 'clear'
     prompt = TTY::Prompt.new
     pastel = Pastel.new
     puts pastel.bold("Please enter the city you'd like to work in") + ' (example: Palo Alto).'
@@ -110,18 +123,66 @@ class CLI
       puts ''
       puts "There are #{company_names.count} companies that have offices in #{city}!"
       puts ''
-      save_company
+      company_menu 
+    else
+      prompt.select("We're sorry, there are no jobs in #{city}. Please try again or select another option.") do |menu|
+        menu.choice 'Search for companies by location', -> { get_location }
+        menu.choice 'Search for companies by keyword', -> { find_companies_by_description }
+        menu.choice 'Go back to main menu', -> { main_menu }
+      end
+    end
+  end
+
+  def company_menu
+    prompt = TTY::Prompt.new
+    pastel = Pastel.new
+    puts pastel.bold('What would you like to do next?')
+      prompt.select(' ') do |menu|
+        menu.choice 'Learn more about a company', -> { see_descriptions }
+        menu.choice 'Save a company to your favorites', -> { save_company }
+        menu.choice 'Start a new search', -> { get_location }
+        menu.choice 'Exit to main menu', -> { main_menu }
+      end
+  end
+
+  def see_descriptions
+    puts ''
+    puts "If you'd like to learn more about a company, please enter its name. Otherwise, type exit to return to the menu."
+    puts ''
+    response = gets.chomp
+    if response == 'exit'
+      main_menu
+    elsif Company.exists?(name: response)
+      company_match = Company.where name: response
+      company_description = company_match.map do |company|
+        company.description
+      end
+      puts ''
+      prompt = TTY::Prompt.new
+      pastel = Pastel.new
+      puts pastel.bold("Here's a little bit more about #{response}:")
+      puts '--------------------------------------------------------------------------------'
+      puts company_description
+      puts '--------------------------------------------------------------------------------'
+      puts ''
+      puts pastel.bold('What would you like to do next?')
+        prompt.select(' ') do |menu|
+          menu.choice 'Learn more about another company', -> { see_descriptions }
+          menu.choice 'Save this to your favorites', -> { save_company }
+          menu.choice 'Start a new search', -> { get_location }
+          menu.choice 'Exit to main menu', -> { main_menu }
+        end
     else
       puts ''
-      puts "We're sorry, there are no jobs in #{city}. Please try again."
+      puts "We're sorry, there are no companies that match the name #{response}. Please try again."
       puts ''
-      get_location
+      see_descriptions
     end
   end
 
   def save_company
     puts ''
-    puts "Please enter the name of the company you'd like to save. Otherwise, type exit to return to the menu."
+    puts "Please enter the name of the company you'd like to save. Otherwise, type exit to return to the main menu."
     puts ''
     response = gets.chomp
     if response == 'exit'
@@ -165,6 +226,27 @@ class CLI
         puts company.name
       end
       favorite_options
+    end
+  end
+
+  def find_companies_by_description
+    prompt = TTY::Prompt.new
+    pastel = Pastel.new
+    puts 'Please enter a keyword'
+    keyword = gets.chomp
+    company_existence = Company.all.select do |company|
+      company.description.include?(keyword)
+    end
+    if company_existence.count > 0
+      company_existence.map do |company|
+        puts pastel.bold("#{company.name.to_s}:  ") + "#{company.description}"
+      end
+    else
+      prompt.select("We're sorry, there are no companies with descriptions that contain #{keyword}. Please try again or select another option.") do |menu|
+        menu.choice 'Search for companies by location', -> { get_location }
+        menu.choice 'Search for companies by keyword', -> { find_companies_by_description }
+        menu.choice 'Go back to main menu', -> { main_menu }
+      end
     end
   end
 
